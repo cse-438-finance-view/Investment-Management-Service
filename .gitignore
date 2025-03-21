@@ -1,0 +1,57 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio
+.vs/
+*.vssscc
+*.vshost.exe
+*.vshost.exe.config
+*.vshost.exe.manifest
+
+# DotNet
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+*.pubxml
+*.publishproj
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+.nuget/
+
+# Entity Framework
+*.edmx.diagram
+*.edmx.sql
+*.edmx
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# Mac
+*.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db 
