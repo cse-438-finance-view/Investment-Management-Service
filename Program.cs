@@ -2,6 +2,11 @@ using InvestmentManagementService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure for Docker environment
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddJsonFile("appsettings.Docker.json", optional: true, reloadOnChange: true);
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
