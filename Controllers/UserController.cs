@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using InvestmentManagementService.Features.Commands.CreateUser;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,19 @@ namespace InvestmentManagementService.Controllers
         }
 
         [HttpPost("[Action]")]
-        public async Task<IActionResult> CreateUser()
+        [ProducesResponseType(typeof(CreateUserCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserCommandRequest request)
         {
-            return Ok();
+            var result = await _mediator.Send(request);
+
+            if (result.Succeeded)
+        {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
     }
 }

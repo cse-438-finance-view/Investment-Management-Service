@@ -5,6 +5,23 @@
 ### Requirements
 - Docker
 - Docker Compose
+- RabbitMQ (running on the host machine)
+
+### SSL Certificate Generation
+Before running the service, you need to generate SSL certificates:
+
+#### Windows:
+```powershell
+cd ./certs
+powershell -ExecutionPolicy Bypass -File ./generate-cert.ps1
+```
+
+#### Linux/macOS:
+```bash
+cd ./certs
+chmod +x generate-cert.sh
+./generate-cert.sh
+```
 
 ### Deployment Steps
 
@@ -14,15 +31,17 @@ git clone <repo-url>
 cd Investment-Management-Service
 ```
 
-2. Build the Docker image and start the service:
+2. Generate SSL certificates (see above)
+
+3. Build the Docker image and start the service:
 ```bash
 docker-compose up -d
 ```
 
-3. The API will be accessible at:
+4. The API will be accessible at:
 - HTTP: http://server-ip:8080
 - HTTPS: https://server-ip:8081
-- Swagger: http://server-ip:8080/swagger
+- Swagger: https://server-ip:8081/swagger
 
 ### Container Management
 
@@ -39,5 +58,7 @@ docker-compose logs -f api
 ### Environment Configuration
 
 The application is configured to connect to the Neon PostgreSQL cloud database that is already deployed. No additional database setup is required.
+
+The application expects a RabbitMQ instance running on the host machine which will be accessed via host.docker.internal.
 
 If you need to modify the environment configuration, edit the docker-compose.yml file. 

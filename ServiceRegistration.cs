@@ -1,5 +1,10 @@
 ﻿using InvestmentManagementService.Contexts;
 using InvestmentManagementService.Entities.AppUser;
+using InvestmentManagementService.Infrastructure.MessageBroker;
+using InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ;
+using InvestmentManagementService.Infrastructure.Services;
+using InvestmentManagementService.ServiceInterfaces;
+using InvestmentManagementService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +18,7 @@ namespace InvestmentManagementService
 
             services.AddDbContext<InvAPIDbContext>(options =>
             {
-                options.UseNpgsql(_configuration["DefaultConnection"], npgsqlOptions =>
+                options.UseNpgsql(_configuration["ConnectionStrings:DefaultConnection"], npgsqlOptions =>
                 {
                     npgsqlOptions.CommandTimeout(300);
                     npgsqlOptions.EnableRetryOnFailure(
@@ -26,8 +31,10 @@ namespace InvestmentManagementService
 
             services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<InvAPIDbContext>().AddDefaultTokenProviders();
 
+            services.AddSingleton<IDomainEventPublisher, RabbitMQPublisher>();
+            services.AddScoped<DomainEventDispatcher>();
 
-
+            services.AddScoped<IUserService, UserService>();
         }
     }
 }
