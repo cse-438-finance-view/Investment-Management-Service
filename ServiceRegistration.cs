@@ -1,5 +1,8 @@
-﻿using InvestmentManagementService.Contexts;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using InvestmentManagementService.Contexts;
 using InvestmentManagementService.Entities.AppUser;
+using InvestmentManagementService.Features.Commands.CreateUser;
 using InvestmentManagementService.Infrastructure.MessageBroker;
 using InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ;
 using InvestmentManagementService.Infrastructure.Services;
@@ -7,6 +10,7 @@ using InvestmentManagementService.ServiceInterfaces;
 using InvestmentManagementService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace InvestmentManagementService
 {
@@ -35,6 +39,14 @@ namespace InvestmentManagementService
             services.AddScoped<DomainEventDispatcher>();
 
             services.AddScoped<IUserService, UserService>();
+            
+            // FluentValidation
+            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationClientsideAdapters();
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            
+            // Spesifik validator'ü kaydet
+            services.AddScoped<IValidator<CreateUserCommandRequest>, CreateUserCommandValidator>();
         }
     }
 }

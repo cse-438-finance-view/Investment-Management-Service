@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using InvestmentManagementService;
 using InvestmentManagementService.Infrastructure.Converters;
 using InvestmentManagementService.Infrastructure.Swagger;
