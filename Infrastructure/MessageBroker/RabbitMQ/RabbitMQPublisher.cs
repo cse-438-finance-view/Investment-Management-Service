@@ -1,4 +1,5 @@
 using InvestmentManagementService.Entities.Common;
+using InvestmentManagementService.Entities.AppUser.Events;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -10,10 +11,12 @@ namespace InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ
         private readonly IConnection _connection;
         private readonly IModel _channel;
         private readonly ILogger<RabbitMQPublisher> _logger;
+        private readonly IConfiguration _configuration;
 
         public RabbitMQPublisher(IConfiguration configuration, ILogger<RabbitMQPublisher> logger)
         {
             _logger = logger;
+            _configuration = configuration;
 
             try
             {
@@ -28,6 +31,9 @@ namespace InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ
                 _connection = factory.CreateConnection();
                 _channel = _connection.CreateModel();
 
+                // Saga servisi tarafından kullanılan exchange'i oluştur
+                _channel.ExchangeDeclare("user.events", ExchangeType.Topic, durable: true);
+
                 _logger.LogInformation("RabbitMQ connection established");
             }
             catch (Exception ex)
@@ -40,10 +46,23 @@ namespace InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ
         public Task PublishAsync<T>(T domainEvent) where T : IDomainEvent
         {
             var eventType = domainEvent.GetType().Name;
-            var exchange = "investment_exchange";
-            var routingKey = eventType;
+            var exchange = "user.events"; // Saga servisinin beklediği exchange adı
+            string routingKey;
 
-            _channel.ExchangeDeclare(exchange, ExchangeType.Topic, durable: true);
+            // Event tipine göre routing key belirle
+            if (domainEvent is UserCreatedEvent)
+            {
+                routingKey = "user.created";
+            }
+            else if (domainEvent is UserCreationFailedEvent)
+            {
+                routingKey = "user.creation.failed";
+            }
+            else
+            {
+                // Diğer event tipleri için default olarak event tipini kullan
+                routingKey = eventType.ToLower();
+            }
 
             var jsonOptions = new JsonSerializerOptions 
             { 
@@ -55,7 +74,8 @@ namespace InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ
             
             var message = JsonSerializer.Serialize(domainEvent, domainEvent.GetType(), jsonOptions);
             
-            _logger.LogInformation("Publishing event {EventType} with content: {Content}", eventType, message);
+            _logger.LogInformation("Publishing event {EventType} with routing key {RoutingKey} and content: {Content}", 
+                eventType, routingKey, message);
             
             var properties = domainEvent.GetType().GetProperties();
             foreach (var prop in properties) 
@@ -77,7 +97,7 @@ namespace InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ
 
             _channel.BasicPublish(exchange, routingKey, basicProperties, body);
 
-            _logger.LogInformation("Domain event {EventType} published to RabbitMQ", eventType);
+            _logger.LogInformation("Domain event {EventType} published to RabbitMQ with routing key {RoutingKey}", eventType, routingKey);
 
             return Task.CompletedTask;
         }

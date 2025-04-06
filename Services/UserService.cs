@@ -28,6 +28,18 @@ namespace InvestmentManagementService.Services
             var existingUserByEmail = await _userManager.FindByEmailAsync(request.Email);
             if (existingUserByEmail != null)
             {
+                _logger.LogWarning("User creation failed: Email {Email} is already in use", request.Email);
+                
+                var failedEvent = new UserCreationFailedEvent(
+                    request.Email,
+                    "Email is already in use",
+                    DateTime.UtcNow
+                );
+                
+                var tempUser = new AppUser();
+                tempUser.AddDomainEvent(failedEvent);
+                await _domainEventDispatcher.DispatchEventsAsync(tempUser);
+                
                 return new CreateUserCommandResponse
                 {
                     Succeeded = false,
@@ -40,6 +52,18 @@ namespace InvestmentManagementService.Services
                 var existingUserByUsername = await _userManager.FindByNameAsync(request.username);
                 if (existingUserByUsername != null)
                 {
+                    _logger.LogWarning("User creation failed: Username {Username} is already in use", request.username);
+                    
+                    var failedEvent = new UserCreationFailedEvent(
+                        request.Email,
+                        "Username is already in use",
+                        DateTime.UtcNow
+                    );
+                    
+                    var tempUser = new AppUser();
+                    tempUser.AddDomainEvent(failedEvent);
+                    await _domainEventDispatcher.DispatchEventsAsync(tempUser);
+                    
                     return new CreateUserCommandResponse
                     {
                         Succeeded = false,
@@ -68,6 +92,16 @@ namespace InvestmentManagementService.Services
                 if (string.IsNullOrEmpty(newUser.Email))
                 {
                     _logger.LogWarning("Cannot create UserCreatedEvent: Email is null or empty for user {UserId}", newUser.Id);
+                    
+                    var failedEvent = new UserCreationFailedEvent(
+                        "unknown",
+                        "Email is null or empty",
+                        DateTime.UtcNow
+                    );
+                    
+                    newUser.AddDomainEvent(failedEvent);
+                    await _domainEventDispatcher.DispatchEventsAsync(newUser);
+                    
                     return new CreateUserCommandResponse
                     {
                         Succeeded = true,
@@ -95,7 +129,19 @@ namespace InvestmentManagementService.Services
                 };
             }
 
-            _logger.LogWarning("Failed to create user with email: {Email}", request.Email);
+            _logger.LogWarning("Failed to create user with email: {Email}, Errors: {Errors}", 
+                request.Email, 
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+            
+            var creationFailedEvent = new UserCreationFailedEvent(
+                request.Email,
+                string.Join(", ", result.Errors.Select(e => e.Description)),
+                DateTime.UtcNow
+            );
+            
+            var failedUser = new AppUser();
+            failedUser.AddDomainEvent(creationFailedEvent);
+            await _domainEventDispatcher.DispatchEventsAsync(failedUser);
             
             return new CreateUserCommandResponse
             {
