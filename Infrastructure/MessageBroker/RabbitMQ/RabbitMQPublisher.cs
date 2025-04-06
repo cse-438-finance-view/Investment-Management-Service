@@ -47,10 +47,10 @@ namespace InvestmentManagementService.Infrastructure.MessageBroker.RabbitMQ
 
             var jsonOptions = new JsonSerializerOptions 
             { 
-                PropertyNamingPolicy = null,  // Property adları olduğu gibi korunur (CamelCase yapılmaz)
-                WriteIndented = true,         // Daha okunabilir JSON
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never, // Null değerleri dahil et
-                IncludeFields = true          // Private field'lar dahil edilir
+                PropertyNamingPolicy = null,  
+                WriteIndented = true,         
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never, 
+                IncludeFields = true         
             };
             
             var message = JsonSerializer.Serialize(domainEvent, domainEvent.GetType(), jsonOptions);

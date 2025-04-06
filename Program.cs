@@ -1,25 +1,10 @@
 using InvestmentManagementService;
 using InvestmentManagementService.Infrastructure.Converters;
 using InvestmentManagementService.Infrastructure.Swagger;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.OpenApi.Models;
-using System.Net;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
-//builder.WebHost.ConfigureKestrel(serverOptions =>
-//{
-//    serverOptions.Listen(IPAddress.Any, 80);
-//    serverOptions.Listen(IPAddress.Any, 443, listenOptions =>
-//    {
-//        listenOptions.UseHttps(options =>
-//        {
-//            options.CheckCertificateRevocation = false;
-//            options.ClientCertificateMode = Microsoft.AspNetCore.Server.Kestrel.Https.ClientCertificateMode.NoCertificate;
-//        });
-//    });
-//});
 
 if (builder.Environment.IsProduction())
 {
@@ -47,8 +32,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// HTTPS yönlendirmesi
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

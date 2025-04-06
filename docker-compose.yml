@@ -7,18 +7,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"
-      - "8081:443"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80;https://+:443
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Endpoints__Https__Url=https://+:443
-      - ASPNETCORE_Kestrel__Endpoints__Http__Url=http://+:80
-      - ASPNETCORE_HTTPS_PORT=8081
-      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
-    volumes:
-      - ./certs:/app/certs:ro
+      - ASPNETCORE_URLS=http://+:80
     networks:
       - investment-network
     extra_hosts:

@@ -40,8 +40,7 @@ docker-compose up -d
 
 4. The API will be accessible at:
 - HTTP: http://server-ip:8080
-- HTTPS: https://server-ip:8081
-- Swagger: https://server-ip:8081/swagger
+- Swagger: http://server-ip:8080/swagger
 
 ### Container Management
 
