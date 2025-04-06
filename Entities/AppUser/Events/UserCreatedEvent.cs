@@ -17,7 +17,6 @@ namespace InvestmentManagementService.Entities.AppUser.Events
         [JsonInclude]
         public string? Surname { get; private set; }
 
-        // Serialization için paramtresiz constructor gerekebilir
         [JsonConstructor]
         public UserCreatedEvent()
         {

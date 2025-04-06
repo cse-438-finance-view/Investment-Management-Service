@@ -40,12 +40,10 @@ namespace InvestmentManagementService
 
             services.AddScoped<IUserService, UserService>();
             
-            // FluentValidation
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             
-            // Spesifik validator'ü kaydet
             services.AddScoped<IValidator<CreateUserCommandRequest>, CreateUserCommandValidator>();
         }
     }
