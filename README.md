@@ -20,6 +20,19 @@ This service is designed to manage user authentication and investment data using
   - Content: UserId, Email, Name, Surname
   - Potential Subscribers: Mail Service, analytics service, other microservices
 
+### 2. UserUpdatedEvent
+  - Trigger: When user profile information is modified
+
+### 3. UserLoginEvent
+  - Trigger: When user successfully logs into the system
+
+### 4. UserDeletedEvent
+  - Trigger: When user account is deleted or deactivated
+    
+### 5. UserLockedOutEvent
+  - Trigger: When user account is locked due to failed login attempts
+
+
 ## Planned Additions
 
 ### Investment Aggregate
